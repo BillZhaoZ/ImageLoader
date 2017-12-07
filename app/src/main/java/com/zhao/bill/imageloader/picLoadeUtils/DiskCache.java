@@ -2,7 +2,9 @@ package com.zhao.bill.imageloader.picLoadeUtils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,7 +16,8 @@ import java.io.IOException;
 
 public class DiskCache implements ImageCache {
 
-    static String cacheDir = "sdcard/myCache";
+    String cacheDir = Environment.getExternalStorageDirectory().toString() + File.separator + "MyCacheImageview";// 拼接需要下载的文件路径
+
 
     @Override
     public Bitmap get(String url) {

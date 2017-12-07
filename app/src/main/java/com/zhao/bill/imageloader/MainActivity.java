@@ -16,19 +16,19 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView imageView = (ImageView) findViewById(R.id.iv_image);
 
-
+        // 获取实例
         ImageLoaderUtil util = new ImageLoaderUtil();
 
         // 磁盘缓存
         util.setImageCache(new DiskCache());
 
-       /* // 内存缓存
-        util.setImageCache(new MemoryCache());
+        // 内存缓存
+        //   util.setImageCache(new MemoryCache());
 
         // 双缓存
-        util.setImageCache(new DoubleCache());
+        //   util.setImageCache(new DoubleCache());
 
-        // 自定义
+       /* // 自定义
         util.setImageCache(new ImageCache() {
             @Override
             public Bitmap get(String url) {
@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         });*/
 
         String url = "http://img.my.csdn.net/uploads/201407/26/1406383291_8239.jpg";
-
         util.displayImage(url, imageView);
     }
 }
