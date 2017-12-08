@@ -16,8 +16,7 @@ import java.io.IOException;
 
 public class DiskCache implements ImageCache {
 
-    String cacheDir = Environment.getExternalStorageDirectory().toString() + File.separator + "MyCacheImageview";// 拼接需要下载的文件路径
-
+    private String cacheDir = Environment.getExternalStorageDirectory().toString() + File.separator + "MyCacheImageview";// 拼接需要下载的文件路径
 
     @Override
     public Bitmap get(String url) {

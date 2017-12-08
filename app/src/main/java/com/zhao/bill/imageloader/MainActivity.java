@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
-import com.zhao.bill.imageloader.picLoadeUtils.DiskCache;
+import com.zhao.bill.imageloader.picLoadeUtils.DoubleCache;
 import com.zhao.bill.imageloader.picLoadeUtils.ImageLoaderUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,13 +20,13 @@ public class MainActivity extends AppCompatActivity {
         ImageLoaderUtil util = new ImageLoaderUtil();
 
         // 磁盘缓存
-        util.setImageCache(new DiskCache());
+        //  util.setImageCache(new DiskCache());
 
         // 内存缓存
-        //   util.setImageCache(new MemoryCache());
+        // util.setImageCache(new MemoryCache());
 
         // 双缓存
-        //   util.setImageCache(new DoubleCache());
+        util.setImageCache(new DoubleCache());
 
        /* // 自定义
         util.setImageCache(new ImageCache() {
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         });*/
 
         String url = "http://img.my.csdn.net/uploads/201407/26/1406383291_8239.jpg";
+
         util.displayImage(url, imageView);
     }
 }
