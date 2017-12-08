@@ -1,6 +1,7 @@
 package com.zhao.bill.imageloader.picLoadeUtils;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.LruCache;
 
 /**
@@ -24,10 +25,8 @@ public class MemoryCache implements ImageCache {
 
             @Override
             protected int sizeOf(String key, Bitmap value) {
-
-                int i = value.getRowBytes() * value.getHeight() / 1024;
-
-                return i;
+                // 重写此方法来衡量每张图片的大小，默认返回图片数量。
+                return value.getRowBytes() * value.getHeight() / 1024;
             }
         };
     }
@@ -40,5 +39,18 @@ public class MemoryCache implements ImageCache {
     @Override
     public void put(String url, Bitmap bitmap) {
         mMemoryCache.put(url, bitmap);
+
+        Log.e("cache", "成功写入内存缓存：" + mMemoryCache.maxSize());
+    }
+
+    @Override
+    public void remove(String url) {
+        if (url != null) {
+            if (mMemoryCache != null) {
+                Bitmap bm = mMemoryCache.remove(url);
+                if (bm != null)
+                    bm.recycle();
+            }
+        }
     }
 }

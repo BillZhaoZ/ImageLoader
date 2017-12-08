@@ -2,7 +2,10 @@ package com.zhao.bill.imageloader;
 
 import android.app.Application;
 
-import org.xutils.*;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.MemoryCategory;
+
+import org.xutils.x;
 
 /**
  * Created by Bill on 2017/12/7.
@@ -10,11 +13,26 @@ import org.xutils.*;
 
 public class MyApplicatipn extends Application {
 
+    private static MyApplicatipn instance;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+        instance = this;
+
+        Glide.get(this).setMemoryCategory(MemoryCategory.HIGH);
+
         x.Ext.init(this);
         x.Ext.setDebug(org.xutils.BuildConfig.DEBUG); // 开启debug会影响性能
+    }
+
+    /**
+     * 获取Application实例
+     *
+     * @return
+     */
+    public static MyApplicatipn getInstance() {
+        return instance;
     }
 }
