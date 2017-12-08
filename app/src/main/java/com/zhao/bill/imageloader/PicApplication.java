@@ -11,9 +11,9 @@ import org.xutils.x;
  * Created by Bill on 2017/12/7.
  */
 
-public class MyApplicatipn extends Application {
+public class PicApplication extends Application {
 
-    private static MyApplicatipn instance;
+    private static PicApplication instance;
 
     @Override
     public void onCreate() {
@@ -32,7 +32,7 @@ public class MyApplicatipn extends Application {
      *
      * @return
      */
-    public static MyApplicatipn getInstance() {
+    public static PicApplication getInstance() {
         return instance;
     }
 }

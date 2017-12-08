@@ -1,4 +1,4 @@
-package com.zhao.bill.imageloader;
+package com.zhao.bill.imageloader.util;
 
 import java.security.MessageDigest;
 

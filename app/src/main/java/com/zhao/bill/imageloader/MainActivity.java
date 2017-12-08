@@ -10,6 +10,7 @@ import com.zhao.bill.imageloader.picLoadeUtils.DiskCache;
 import com.zhao.bill.imageloader.picLoadeUtils.DoubleCache;
 import com.zhao.bill.imageloader.picLoadeUtils.ImageLoaderUtil;
 import com.zhao.bill.imageloader.picLoadeUtils.MemoryCache;
+import com.zhao.bill.imageloader.util.PreferenceUtil;
 
 /**
  * 主页设置

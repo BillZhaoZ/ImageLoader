@@ -6,7 +6,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.zhao.bill.imageloader.MyApplicatipn;
+import com.zhao.bill.imageloader.PicApplication;
 
 /**
  * 图片加载
@@ -28,7 +28,7 @@ public class ImageLoaderUtil {
         if (bitmap != null) {
             //imageView.setImageBitmap(bitmap);
 
-            Glide.with(MyApplicatipn.getInstance())
+            Glide.with(PicApplication.getInstance())
                     .load(Uri.parse(url))
                     .into(imageView);
             Log.e("cache", "缓存中获取的图片,显示完成：" + bitmap);
@@ -37,7 +37,7 @@ public class ImageLoaderUtil {
         }
 
         // 图片没缓存   下载图片
-        Glide.with(MyApplicatipn.getInstance())
+        Glide.with(PicApplication.getInstance())
                 .load(Uri.parse(url))
                 .into(imageView);
         Log.e("cache", "显示图片完成：");

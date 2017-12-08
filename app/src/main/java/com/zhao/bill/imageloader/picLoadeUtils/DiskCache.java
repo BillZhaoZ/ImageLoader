@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
-import com.zhao.bill.imageloader.MD5Encoder;
+import com.zhao.bill.imageloader.util.MD5Encoder;
 
 import java.io.File;
 import java.io.FileInputStream;

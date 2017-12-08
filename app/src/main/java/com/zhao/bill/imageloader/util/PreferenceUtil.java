@@ -1,4 +1,4 @@
-package com.zhao.bill.imageloader;
+package com.zhao.bill.imageloader.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
