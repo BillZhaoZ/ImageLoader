@@ -45,6 +45,15 @@
             android:text="双重缓存"
             android:textColor="#ffffff"/>
 
+        <TextView
+            android:id="@+id/reset"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="重置缓存类型"/>
+
     </LinearLayout>
 
     <ImageView

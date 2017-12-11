@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
     public static final int DISK = 1;
     public static final int MEMORY = 2;
     public static final int BOTH = 3;
+    public static final int NULL = 4;
     private TextView mTvShow;
 
     @Override
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
         findViewById(R.id.disk).setOnClickListener(this);
         findViewById(R.id.memory).setOnClickListener(this);
         findViewById(R.id.two).setOnClickListener(this);
+        findViewById(R.id.reset).setOnClickListener(this);
 
         int type = (int) PreferenceUtil.getObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", 0);
 
@@ -118,6 +120,14 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
 
                 mUtil.setImageCache(new DoubleCache());
                 mUtil.displayImage(url, mImageView);
+                break;
+
+            case R.id.reset: // 重置缓存
+                Log.e("cache", "点击了重置缓存：");
+                PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", NULL);
+                mTvShow.setText("展示方式为：暂未设置");
+
+                mUtil.setImageCache(null);
                 break;
         }
     }

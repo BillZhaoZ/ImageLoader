@@ -9,18 +9,13 @@
         
 1、磁盘缓存
     
-    /**
-     * 磁盘缓存
-     * Created by Bill on 2017/12/7.
-     */
     public class DiskCache implements ImageCache {
     
-        private String cacheDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cache/pics";
+        private String cacheDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Image/picsCache";
     
         @Override
         public Bitmap get(String url) {
             // 从本地文件获取图片
-    
             try {
                 String fileName = MD5Encoder.encode(url);
                 File file = new File(cacheDir, fileName);
@@ -28,8 +23,7 @@
                 if (file.exists()) {
                     Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
     
-                    Log.e("cache", "获取图片：" + bitmap);
-    
+                    Log.e("cache", "获取图片：来自于磁盘缓存： " + bitmap);
                     return bitmap;
                 }
     
@@ -52,8 +46,8 @@
                 File file = new File(cacheDir, fileName);
     
                 // file其实是图片，它的父级File是文件夹，判断一下文件夹是否存在，如果不存在，创建文件夹
-    
                 File fileParent = file.getParentFile();
+    
                 if (!fileParent.exists()) {
                     // 文件夹不存在
                     fileParent.mkdirs();// 创建文件夹
@@ -61,11 +55,11 @@
     
                 // 将图片保存到本地
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
+    
+                Log.e("cache", "成功写入磁盘缓存：" + cacheDir);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-    
-            Log.e("cache", "成功写入磁盘缓存：" + cacheDir);
         }
     
         @Override
@@ -77,63 +71,58 @@
  
  2、内存缓存
     
-    /**
-     * 内存缓存
-     * Created by Bill on 2017/12/7.
-     */
-    public class MemoryCache implements ImageCache {
-    
-        private LruCache<String, Bitmap> mMemoryCache;
-    
-        public MemoryCache() {
-            // 初始化LRU缓存
-            intiMemoryCache();
-        }
-    
-        private void intiMemoryCache() {
-            int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-            int cacheSize = maxMemory / 4;
-    
-            mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
-    
-                @Override
-                protected int sizeOf(String key, Bitmap value) {
-                    // 重写此方法来衡量每张图片的大小，默认返回图片数量。
-                    return value.getRowBytes() * value.getHeight() / 1024;
-                }
-            };
-        }
-    
-        @Override
-        public Bitmap get(String url) {
-            return mMemoryCache.get(url);
-        }
-    
-        @Override
-        public void put(String url, Bitmap bitmap) {
-            mMemoryCache.put(url, bitmap);
-    
-            Log.e("cache", "成功写入内存缓存：" + mMemoryCache.maxSize());
-        }
-    
-        @Override
-        public void remove(String url) {
-            if (url != null) {
-                if (mMemoryCache != null) {
-                    Bitmap bm = mMemoryCache.remove(url);
-                    if (bm != null)
-                        bm.recycle();
-                }
-            }
-        }
+   public class MemoryCache implements ImageCache {
+   
+       private LruCache<String, Bitmap> mMemoryCache;
+   
+       public MemoryCache() {
+           // 初始化LRU缓存
+           intiMemoryCache();
+       }
+   
+       private void intiMemoryCache() {
+           int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+           int cacheSize = maxMemory / 4;
+   
+           mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+   
+               @Override
+               protected int sizeOf(String key, Bitmap value) {
+                   // 重写此方法来衡量每张图片的大小，默认返回图片数量。
+                   return value.getRowBytes() * value.getHeight() / 1024;
+               }
+           };
+       }
+   
+       @Override
+       public Bitmap get(String url) {
+   
+           Log.e("cache", "获取的图片来自：内存缓存");
+           return mMemoryCache.get(url);
+       }
+   
+       @Override
+       public void put(String url, Bitmap bitmap) {
+           Log.e("cache", "成功写入内存缓存：" + mMemoryCache.maxSize());
+   
+           mMemoryCache.put(url, bitmap);
+       }
+   
+       @Override
+       public void remove(String url) {
+           if (url != null) {
+               if (mMemoryCache != null) {
+                   Bitmap bm = mMemoryCache.remove(url);
+                   if (bm != null)
+                       bm.recycle();
+               }
+           }
+       }
     }
+   
 
  3、双重缓存
     
-    /**
-     * 双层缓存
-     * Created by Bill on 2017/12/7.
-     */
     public class DoubleCache implements ImageCache {
     
         private ImageCache mMemoryCache = new MemoryCache();
@@ -182,6 +171,8 @@
         public static final int DISK = 1;
         public static final int MEMORY = 2;
         public static final int BOTH = 3;
+        public static final int NULL = 4;
+        private TextView mTvShow;
     
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -189,18 +180,43 @@
             setContentView(R.layout.activity_main);
     
             mImageView = findViewById(R.id.iv_image);
+            mTvShow = findViewById(R.id.tv_show);
     
             findViewById(R.id.disk).setOnClickListener(this);
             findViewById(R.id.memory).setOnClickListener(this);
             findViewById(R.id.two).setOnClickListener(this);
-    
-            // 获取实例
-            mUtil = new ImageLoaderUtil();
+            findViewById(R.id.reset).setOnClickListener(this);
     
             int type = (int) PreferenceUtil.getObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", 0);
     
-            if (type != 0) {
+            if (type == 1) {
+                mTvShow.setText("展示方式为：磁盘缓存");
+                Log.e("cache", "type为：磁盘缓存");
+    
+                // 获取实例
+                mUtil = new ImageLoaderUtil();
+                mUtil.setImageCache(new DiskCache());
                 mUtil.displayImage(url, mImageView);
+    
+            } else if (type == 2) {
+                mTvShow.setText("展示方式为：内存缓存");
+                Log.e("cache", "type为：内存缓存");
+    
+                // 获取实例
+                mUtil = new ImageLoaderUtil();
+                mUtil.setImageCache(new MemoryCache());
+                mUtil.displayImage(url, mImageView);
+    
+            } else if (type == 3) {
+                mTvShow.setText("展示方式为：双重缓存");
+                Log.e("cache", "type为：双重缓存");
+    
+                // 获取实例
+                mUtil = new ImageLoaderUtil();
+                mUtil.setImageCache(new DoubleCache());
+                mUtil.displayImage(url, mImageView);
+            } else {
+                mTvShow.setText("展示方式为：未设置");
             }
     
            /* // 自定义
@@ -220,12 +236,15 @@
         @Override
         public void onClick(View view) {
     
+            // 获取实例
+            mUtil = new ImageLoaderUtil();
+    
             switch (view.getId()) {
     
                 case R.id.disk:  // 磁盘缓存
                     Log.e("cache", "点击了磁盘缓存：");
-    
                     PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", DISK);
+                    mTvShow.setText("展示方式为：磁盘缓存");
     
                     mUtil.setImageCache(new DiskCache());
                     mUtil.displayImage(url, mImageView);
@@ -234,7 +253,7 @@
                 case R.id.memory: // 内存缓存
                     Log.e("cache", "点击了内存缓存：");
                     PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", MEMORY);
-    
+                    mTvShow.setText("展示方式为：内存缓存");
     
                     mUtil.setImageCache(new MemoryCache());
                     mUtil.displayImage(url, mImageView);
@@ -243,9 +262,18 @@
                 case R.id.two: // 双缓存
                     Log.e("cache", "点击了双重缓存：");
                     PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", BOTH);
+                    mTvShow.setText("展示方式为：双重缓存");
     
                     mUtil.setImageCache(new DoubleCache());
                     mUtil.displayImage(url, mImageView);
+                    break;
+    
+                case R.id.reset: // 重置缓存
+                    Log.e("cache", "点击了重置缓存：");
+                    PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", NULL);
+                    mTvShow.setText("展示方式为：暂未设置");
+    
+                    mUtil.setImageCache(null);
                     break;
             }
         }
