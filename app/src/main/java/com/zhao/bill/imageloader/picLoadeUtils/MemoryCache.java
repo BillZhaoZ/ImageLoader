@@ -40,9 +40,9 @@ public class MemoryCache implements ImageCache {
 
     @Override
     public void put(String url, Bitmap bitmap) {
-        mMemoryCache.put(url, bitmap);
-
         Log.e("cache", "成功写入内存缓存：" + mMemoryCache.maxSize());
+
+        mMemoryCache.put(url, bitmap);
     }
 
     @Override

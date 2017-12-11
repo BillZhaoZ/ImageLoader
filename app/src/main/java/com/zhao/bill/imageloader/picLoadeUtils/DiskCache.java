@@ -17,7 +17,7 @@ import java.io.FileOutputStream;
  */
 public class DiskCache implements ImageCache {
 
-    private String cacheDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cache/pics";
+    private String cacheDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Image/picsCache";
 
     @Override
     public Bitmap get(String url) {
@@ -29,7 +29,7 @@ public class DiskCache implements ImageCache {
             if (file.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
 
-                Log.e("cache", "获取图片：磁盘缓存" + bitmap);
+                Log.e("cache", "获取图片：来自于磁盘缓存： " + bitmap);
                 return bitmap;
             }
 
