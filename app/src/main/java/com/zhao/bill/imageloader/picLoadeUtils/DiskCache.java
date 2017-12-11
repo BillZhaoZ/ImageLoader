@@ -17,7 +17,7 @@ import java.io.FileOutputStream;
  */
 public class DiskCache implements ImageCache {
 
-    private String cacheDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Image/picsCache";
+    private String cacheDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MyImageCache/picsCache";
 
     @Override
     public Bitmap get(String url) {
