@@ -33,6 +33,8 @@ public class MemoryCache implements ImageCache {
 
     @Override
     public Bitmap get(String url) {
+
+        Log.e("cache", "获取的图片来自：内存缓存");
         return mMemoryCache.get(url);
     }
 

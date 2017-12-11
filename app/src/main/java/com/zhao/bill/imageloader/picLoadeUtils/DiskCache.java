@@ -22,7 +22,6 @@ public class DiskCache implements ImageCache {
     @Override
     public Bitmap get(String url) {
         // 从本地文件获取图片
-
         try {
             String fileName = MD5Encoder.encode(url);
             File file = new File(cacheDir, fileName);
@@ -30,8 +29,7 @@ public class DiskCache implements ImageCache {
             if (file.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
 
-                Log.e("cache", "获取图片：" + bitmap);
-
+                Log.e("cache", "获取图片：磁盘缓存" + bitmap);
                 return bitmap;
             }
 
@@ -54,8 +52,8 @@ public class DiskCache implements ImageCache {
             File file = new File(cacheDir, fileName);
 
             // file其实是图片，它的父级File是文件夹，判断一下文件夹是否存在，如果不存在，创建文件夹
-
             File fileParent = file.getParentFile();
+
             if (!fileParent.exists()) {
                 // 文件夹不存在
                 fileParent.mkdirs();// 创建文件夹
@@ -63,11 +61,11 @@ public class DiskCache implements ImageCache {
 
             // 将图片保存到本地
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
+
+            Log.e("cache", "成功写入磁盘缓存：" + cacheDir);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        Log.e("cache", "成功写入磁盘缓存：" + cacheDir);
     }
 
     @Override

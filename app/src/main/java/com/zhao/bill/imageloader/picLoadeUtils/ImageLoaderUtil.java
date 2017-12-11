@@ -14,7 +14,7 @@ import com.zhao.bill.imageloader.PicApplication;
  */
 public class ImageLoaderUtil {
 
-    private ImageCache mImageCache = new MemoryCache(); // 图片缓存
+    private ImageCache mImageCache; // 图片缓存
 
     // 注入缓存类型
     public void setImageCache(ImageCache imageCache) {
@@ -26,13 +26,9 @@ public class ImageLoaderUtil {
         Bitmap bitmap = mImageCache.get(url);
 
         if (bitmap != null) {
-            //imageView.setImageBitmap(bitmap);
+            imageView.setImageBitmap(bitmap);
 
-            Glide.with(PicApplication.getInstance())
-                    .load(Uri.parse(url))
-                    .into(imageView);
             Log.e("cache", "缓存中获取的图片,显示完成：" + bitmap);
-
             return;
         }
 
@@ -40,6 +36,6 @@ public class ImageLoaderUtil {
         Glide.with(PicApplication.getInstance())
                 .load(Uri.parse(url))
                 .into(imageView);
-        Log.e("cache", "显示图片完成：");
+        Log.e("cache", "网络下载的图片，显示完成：");
     }
 }

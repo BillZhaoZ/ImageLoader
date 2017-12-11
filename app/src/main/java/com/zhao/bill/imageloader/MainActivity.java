@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.zhao.bill.imageloader.picLoadeUtils.DiskCache;
 import com.zhao.bill.imageloader.picLoadeUtils.DoubleCache;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
     public static final int DISK = 1;
     public static final int MEMORY = 2;
     public static final int BOTH = 3;
+    private TextView mTvShow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,18 +33,42 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
         setContentView(R.layout.activity_main);
 
         mImageView = findViewById(R.id.iv_image);
+        mTvShow = findViewById(R.id.tv_show);
 
         findViewById(R.id.disk).setOnClickListener(this);
         findViewById(R.id.memory).setOnClickListener(this);
         findViewById(R.id.two).setOnClickListener(this);
 
-        // 获取实例
-        mUtil = new ImageLoaderUtil();
-
         int type = (int) PreferenceUtil.getObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", 0);
 
-        if (type != 0) {
+        if (type == 1) {
+            mTvShow.setText("展示方式为：磁盘缓存");
+            Log.e("cache", "type为：磁盘缓存");
+
+            // 获取实例
+            mUtil = new ImageLoaderUtil();
+            mUtil.setImageCache(new DiskCache());
             mUtil.displayImage(url, mImageView);
+
+        } else if (type == 2) {
+            mTvShow.setText("展示方式为：内存缓存");
+            Log.e("cache", "type为：内存缓存");
+
+            // 获取实例
+            mUtil = new ImageLoaderUtil();
+            mUtil.setImageCache(new MemoryCache());
+            mUtil.displayImage(url, mImageView);
+
+        } else if (type == 3) {
+            mTvShow.setText("展示方式为：双重缓存");
+            Log.e("cache", "type为：双重缓存");
+
+            // 获取实例
+            mUtil = new ImageLoaderUtil();
+            mUtil.setImageCache(new DoubleCache());
+            mUtil.displayImage(url, mImageView);
+        } else {
+            mTvShow.setText("展示方式为：未设置");
         }
 
        /* // 自定义
@@ -62,12 +88,15 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
     @Override
     public void onClick(View view) {
 
+        // 获取实例
+        mUtil = new ImageLoaderUtil();
+
         switch (view.getId()) {
 
             case R.id.disk:  // 磁盘缓存
                 Log.e("cache", "点击了磁盘缓存：");
-
                 PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", DISK);
+                mTvShow.setText("展示方式为：磁盘缓存");
 
                 mUtil.setImageCache(new DiskCache());
                 mUtil.displayImage(url, mImageView);
@@ -76,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
             case R.id.memory: // 内存缓存
                 Log.e("cache", "点击了内存缓存：");
                 PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", MEMORY);
-
+                mTvShow.setText("展示方式为：内存缓存");
 
                 mUtil.setImageCache(new MemoryCache());
                 mUtil.displayImage(url, mImageView);
@@ -85,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
             case R.id.two: // 双缓存
                 Log.e("cache", "点击了双重缓存：");
                 PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", BOTH);
+                mTvShow.setText("展示方式为：双重缓存");
 
                 mUtil.setImageCache(new DoubleCache());
                 mUtil.displayImage(url, mImageView);
