@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
                 mTvShow.setText("展示方式为：暂未设置");
 
                 mUtil.setImageCache(null);
+                mUtil.removeCache(url);
                 break;
         }
     }

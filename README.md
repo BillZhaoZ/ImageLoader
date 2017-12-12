@@ -21,6 +21,7 @@
      */
     public class DiskCache implements ImageCache {
     
+        private Context mContext;
         private String url;
         private String cacheDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Image/picsCache";
         private static final long DISK_CACHE_SIZE = 1024 * 1024 * 50;// 50MB
@@ -30,17 +31,26 @@
         }
     
         public DiskCache(Context mContext, String url) {
+            this.mContext = mContext;
             this.url = url;
             init();
         }
     
+        /**
+         * 初始化disklrucache
+         */
         private void init() {
     
             try {
                 String fileName = MD5Encoder.encode(url);
-                File diskCacheDir = new File(cacheDir, fileName);
+                //  File diskCacheDir = new File(cacheDir, fileName);
+                File diskCacheDir = loadUtil.getDiskCacheDir(mContext, fileName);
     
-                mDiskLruCache = DiskLruCache.open(diskCacheDir, 1, 1, DISK_CACHE_SIZE);
+                if (!diskCacheDir.exists()) {
+                    diskCacheDir.mkdirs();
+                }
+    
+                mDiskLruCache = DiskLruCache.open(diskCacheDir, loadUtil.getAppVersion(mContext), 1, DISK_CACHE_SIZE);
     
             } catch (Exception e) {
                 e.printStackTrace();
@@ -70,6 +80,7 @@
     
             return null;*/
     
+    
             // 第二种
             Bitmap bitmap = null;
             String key = null;
@@ -86,7 +97,6 @@
             } catch (Exception e) {
                 e.printStackTrace();
             }
-    
     
             if (bitmap != null) {
                 Log.e("cache", "获取图片：来自于磁盘缓存 === " + cacheDir + "===" + bitmap);
@@ -107,6 +117,8 @@
     
                 if (editor != null) {
                     OutputStream outputStream = editor.newOutputStream(0);
+    
+                    // 写入图片到本地文件
                     if (loadUtil.downloadUrlToStream(url, outputStream)) {
                         editor.commit();
                     } else {
@@ -150,9 +162,22 @@
             }*/
         }
     
+        /**
+         * DiskLruCache会根据我们在调用open()方法时设定的缓存最大值来自动删除多余的缓存。
+         * 只有你确定某个key对应的缓存内容已经过期，需要从网络获取最新数据的时候才应该调用remove()方法来移除缓存。
+         *
+         * @param url
+         */
         @Override
         public void remove(String url) {
+            String key = null;
     
+            try {
+                key = MD5Encoder.encode(url);
+                mDiskLruCache.remove(key);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     
     }
@@ -265,7 +290,7 @@
     
  4、使用
  
-    /**
+    **
      * 主页设置
      */
     public class MainActivity extends AppCompatActivity implements ImageView.OnClickListener {
@@ -301,7 +326,7 @@
     
                 // 获取实例
                 mUtil = new ImageLoaderUtil();
-                mUtil.setImageCache(new DiskCache());
+                mUtil.setImageCache(new DiskCache(PicApplication.getInstance(), url));
                 mUtil.displayImage(url, mImageView);
     
             } else if (type == 2) {
@@ -352,7 +377,7 @@
                     PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", DISK);
                     mTvShow.setText("展示方式为：磁盘缓存");
     
-                    mUtil.setImageCache(new DiskCache());
+                    mUtil.setImageCache(new DiskCache(PicApplication.getInstance(), url));
                     mUtil.displayImage(url, mImageView);
                     break;
     
@@ -380,13 +405,119 @@
                     mTvShow.setText("展示方式为：暂未设置");
     
                     mUtil.setImageCache(null);
+                    mUtil.removeCache(url);
                     break;
             }
         }
     }
  
  
- 5.工具类
+ 5.实现类
+    
+        /**
+         * 图片加载
+         * Created by Bill on 2017/12/7.
+         */
+        public class ImageLoaderUtil {
+        
+            private ImageCache mImageCache; // 图片缓存
+            private ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); // 线程池，线程数量为CPU的数量
+        
+            /**
+             * 注入缓存类型   依赖于抽象  里氏替换原则
+             *
+             * @param imageCache
+             */
+            public void setImageCache(ImageCache imageCache) {
+                mImageCache = imageCache;
+            }
+        
+            /**
+             * 移除缓存
+             *
+             * @param url
+             */
+            public void removeCache(String url) {
+                mImageCache.remove(url);
+            }
+        
+            /**
+             * 展示图片
+             *
+             * @param url
+             * @param imageView
+             */
+            public void displayImage(String url, ImageView imageView) {
+                Bitmap bitmap = mImageCache.get(url);
+        
+                if (bitmap != null) {
+                    imageView.setImageBitmap(bitmap);
+        
+                    Log.e("cache", "缓存中获取的图片,显示完成：" + bitmap);
+                    return;
+                }
+        
+                loadPic(url, imageView);
+            }
+        
+            /**
+             * 线程池下载
+             *
+             * @param url
+             * @param view
+             */
+            private void loadPic(final String url, final ImageView view) {
+                view.setTag(url);
+        
+                mExecutorService.submit(() -> {
+                    Bitmap bitmap = downloadImage(url);
+        
+                    if (bitmap == null) {
+                        return;
+                    }
+        
+                    if (view.getTag().equals(url)) {
+                        view.setImageBitmap(bitmap);
+        
+                        // 显示完成后  放入缓存
+                        mImageCache.put(url, bitmap);
+        
+                        Log.e("cache", "网络下载的图片，显示完成：");
+                    }
+                });
+            }
+        
+            /**
+             * 下载图片
+             *
+             * @param url
+             * @return
+             */
+            private Bitmap downloadImage(String url) {
+                Log.e("cache", "开始从网络下载图片啦 ：");
+        
+                Bitmap bitmap = null;
+        
+                try {
+                    URL url1 = new URL(url);
+        
+                    HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
+                    connection.setDoInput(true);
+                    connection.setRequestMethod("GET");
+                    connection.setReadTimeout(8000);
+        
+                    bitmap = BitmapFactory.decodeStream(connection.getInputStream());
+                    connection.disconnect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        
+                return bitmap;
+            }
+        }
+ 
+ 
+ 6.工具类
     
     /**
      * Md5加密工具
@@ -418,3 +549,100 @@
         
     }
     
+    
+    // 工具类
+    public class loadUtil {
+
+    /**
+     * 下载图片转换为流对象
+     *
+     * @param urlString
+     * @param outputStream
+     * @return
+     */
+    public static boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
+
+        HttpURLConnection urlConnection = null;
+        BufferedOutputStream out = null;
+        BufferedInputStream in = null;
+
+        try {
+            final URL url = new URL(urlString);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            in = new BufferedInputStream(urlConnection.getInputStream(), 8 * 1024);
+            out = new BufferedOutputStream(outputStream, 8 * 1024);
+
+            int b;
+
+            while ((b = in.read()) != -1) {
+                out.write(b);
+            }
+
+            return true;
+
+        } catch (final IOException e) {
+            e.printStackTrace();
+        } finally {
+
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+
+            try {
+                if (out != null) {
+                    out.close();
+                }
+
+                if (in != null) {
+                    in.close();
+                }
+
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 获取应用版本号
+     *
+     * @param context
+     * @return
+     */
+    public static int getAppVersion(Context context) {
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return info.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return 1;
+    }
+
+    /**
+     * 获取缓存路径
+     *
+     * @param context
+     * @param uniqueName
+     * @return
+     */
+    public static File getDiskCacheDir(Context context, String uniqueName) {
+        String cachePath;
+
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            cachePath = context.getExternalCacheDir().getPath();
+        } else {
+            cachePath = context.getCacheDir().getPath();
+        }
+
+        return new File(cachePath + File.separator + uniqueName);
+    }
+    
+    }
+    
+        

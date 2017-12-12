@@ -17,16 +17,32 @@ import java.util.concurrent.Executors;
 public class ImageLoaderUtil {
 
     private ImageCache mImageCache; // 图片缓存
+    private ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); // 线程池，线程数量为CPU的数量
 
-    private ExecutorService mExecutorService = Executors.newFixedThreadPool
-            (Runtime.getRuntime().availableProcessors()); // 线程池，线程数量为CPU的数量
-
-    // 注入缓存类型   依赖于抽象  里氏替换原则
+    /**
+     * 注入缓存类型   依赖于抽象  里氏替换原则
+     *
+     * @param imageCache
+     */
     public void setImageCache(ImageCache imageCache) {
         mImageCache = imageCache;
     }
 
-    // 展示图片
+    /**
+     * 移除缓存
+     *
+     * @param url
+     */
+    public void removeCache(String url) {
+        mImageCache.remove(url);
+    }
+
+    /**
+     * 展示图片
+     *
+     * @param url
+     * @param imageView
+     */
     public void displayImage(String url, ImageView imageView) {
         Bitmap bitmap = mImageCache.get(url);
 
@@ -37,14 +53,6 @@ public class ImageLoaderUtil {
             return;
         }
 
-        // 图片没缓存   下载图片
-       /* Glide.with(PicApplication.getInstance())
-                .load(Uri.parse(url))
-                .into(imageView);
-        Log.e("cache", "网络下载的图片，显示完成：");*/
-
-
-        // 如果使用Glide  此后的代码 都可以不用执行
         loadPic(url, imageView);
     }
 
@@ -85,14 +93,6 @@ public class ImageLoaderUtil {
         Log.e("cache", "开始从网络下载图片啦 ：");
 
         Bitmap bitmap = null;
-
-       /* try {
-            bitmap = Glide.with(PicApplication.getInstance()).load(url).asBitmap().into(500, 500).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }*/
 
         try {
             URL url1 = new URL(url);

@@ -120,6 +120,8 @@ public class DiskCache implements ImageCache {
 
             if (editor != null) {
                 OutputStream outputStream = editor.newOutputStream(0);
+
+                // 写入图片到本地文件
                 if (loadUtil.downloadUrlToStream(url, outputStream)) {
                     editor.commit();
                 } else {
@@ -163,6 +165,12 @@ public class DiskCache implements ImageCache {
         }*/
     }
 
+    /**
+     * DiskLruCache会根据我们在调用open()方法时设定的缓存最大值来自动删除多余的缓存。
+     * 只有你确定某个key对应的缓存内容已经过期，需要从网络获取最新数据的时候才应该调用remove()方法来移除缓存。
+     *
+     * @param url
+     */
     @Override
     public void remove(String url) {
         String key = null;
