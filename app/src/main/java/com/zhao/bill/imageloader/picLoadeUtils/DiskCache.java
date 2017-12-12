@@ -43,7 +43,6 @@ public class DiskCache implements ImageCache {
     @Override
     public void put(String url, Bitmap bitmap) {
         // 将bitmap写入文件中
-
         try {
             // 文件的名字
             String fileName = MD5Encoder.encode(url);
