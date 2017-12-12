@@ -1,7 +1,13 @@
 package com.zhao.bill.imageloader.util;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Environment;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -67,4 +73,40 @@ public class loadUtil {
         return false;
     }
 
+    /**
+     * 获取应用版本号
+     *
+     * @param context
+     * @return
+     */
+    public static int getAppVersion(Context context) {
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return info.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return 1;
+    }
+
+    /**
+     * 获取缓存路径
+     *
+     * @param context
+     * @param uniqueName
+     * @return
+     */
+    public static File getDiskCacheDir(Context context, String uniqueName) {
+        String cachePath;
+
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            cachePath = context.getExternalCacheDir().getPath();
+        } else {
+            cachePath = context.getCacheDir().getPath();
+        }
+
+        return new File(cachePath + File.separator + uniqueName);
+    }
 }

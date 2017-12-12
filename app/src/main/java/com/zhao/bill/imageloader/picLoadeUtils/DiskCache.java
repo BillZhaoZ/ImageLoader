@@ -46,9 +46,14 @@ public class DiskCache implements ImageCache {
 
         try {
             String fileName = MD5Encoder.encode(url);
-            File diskCacheDir = new File(cacheDir, fileName);
+            //  File diskCacheDir = new File(cacheDir, fileName);
+            File diskCacheDir = loadUtil.getDiskCacheDir(mContext, fileName);
 
-            mDiskLruCache = DiskLruCache.open(diskCacheDir, 1, 1, DISK_CACHE_SIZE);
+            if (!diskCacheDir.exists()) {
+                diskCacheDir.mkdirs();
+            }
+
+            mDiskLruCache = DiskLruCache.open(diskCacheDir, loadUtil.getAppVersion(mContext), 1, DISK_CACHE_SIZE);
 
         } catch (Exception e) {
             e.printStackTrace();
