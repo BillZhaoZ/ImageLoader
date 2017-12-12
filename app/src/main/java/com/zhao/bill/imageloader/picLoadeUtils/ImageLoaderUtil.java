@@ -84,6 +84,15 @@ public class ImageLoaderUtil {
     private Bitmap downloadImage(String url) {
         Bitmap bitmap = null;
 
+       /* try {
+            bitmap = Glide.with(PicApplication.getInstance()).load(url).asBitmap().into(500, 500).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }*/
+
+
         try {
             URL url1 = new URL(url);
 
