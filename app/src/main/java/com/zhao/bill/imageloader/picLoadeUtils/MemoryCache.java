@@ -6,6 +6,7 @@ import android.util.LruCache;
 
 /**
  * 内存缓存
+ * LRUcache算法
  * Created by Bill on 2017/12/7.
  */
 public class MemoryCache implements ImageCache {
