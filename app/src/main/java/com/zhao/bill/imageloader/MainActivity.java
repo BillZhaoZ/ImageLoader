@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
 
             // 获取实例
             mUtil = new ImageLoaderUtil();
-            mUtil.setImageCache(new DiskCache());
+            mUtil.setImageCache(new DiskCache(PicApplication.getInstance(), url));
             mUtil.displayImage(url, mImageView);
 
         } else if (type == 2) {
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
                 PreferenceUtil.putObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", DISK);
                 mTvShow.setText("展示方式为：磁盘缓存");
 
-                mUtil.setImageCache(new DiskCache());
+                mUtil.setImageCache(new DiskCache(PicApplication.getInstance(), url));
                 mUtil.displayImage(url, mImageView);
                 break;
 
