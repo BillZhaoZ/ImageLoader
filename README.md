@@ -157,6 +157,23 @@
     }
     
     
+    /**
+     * 存取接口
+     * 缓存抽象类
+     * 接口隔离原则  缓存的具体实现对ImageLoader隐藏 庞大的接口拆分到具体的接口实现当中
+     * <p>
+     * Created by Bill on 2017/12/7.
+     */
+    public interface ImageCache {
+    
+        Bitmap get(String url);
+    
+        void put(String url, Bitmap bitmap);
+    
+        void remove(String url);
+    }
+   
+    
  4、使用
  
     /**
@@ -278,3 +295,37 @@
             }
         }
     }
+ 
+ 
+ 5.工具类
+    
+    /**
+     * Md5加密工具
+     */
+    public class MD5Encoder {
+    
+        /**
+         * Md5Encoder
+         *
+         * @param string
+         * @return
+         * @throws Exception
+         */
+        public static String encode(String string) throws Exception {
+    
+            byte[] hash = MessageDigest.getInstance("MD5").digest(string.getBytes("UTF-8"));
+    
+            StringBuilder hex = new StringBuilder(hash.length * 2);
+    
+            for (byte b : hash) {
+                if ((b & 0xFF) < 0x10) {
+                    hex.append("0");
+                }
+                hex.append(Integer.toHexString(b & 0xFF));
+            }
+    
+            return hex.toString();
+        }
+    
+    }
+    

@@ -18,10 +18,10 @@ public class ImageLoaderUtil {
 
     private ImageCache mImageCache; // 图片缓存
 
-    ExecutorService mExecutorService = Executors.newFixedThreadPool
+    private ExecutorService mExecutorService = Executors.newFixedThreadPool
             (Runtime.getRuntime().availableProcessors()); // 线程池，线程数量为CPU的数量
 
-    // 注入缓存类型
+    // 注入缓存类型   依赖于抽象  里氏替换原则
     public void setImageCache(ImageCache imageCache) {
         mImageCache = imageCache;
     }
@@ -93,7 +93,6 @@ public class ImageLoaderUtil {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }*/
-
 
         try {
             URL url1 = new URL(url);
