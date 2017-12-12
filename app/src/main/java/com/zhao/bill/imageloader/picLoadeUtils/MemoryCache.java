@@ -17,6 +17,7 @@ public class MemoryCache implements ImageCache {
         intiMemoryCache();
     }
 
+    // 初始化LRU缓存
     private void intiMemoryCache() {
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         int cacheSize = maxMemory / 4;
@@ -34,13 +35,13 @@ public class MemoryCache implements ImageCache {
     @Override
     public Bitmap get(String url) {
 
-        Log.e("cache", "获取的图片来自：内存缓存");
+        Log.e("cache", "获取的图片来自 === 内存缓存");
         return mMemoryCache.get(url);
     }
 
     @Override
     public void put(String url, Bitmap bitmap) {
-        Log.e("cache", "成功写入内存缓存：" + mMemoryCache.maxSize());
+        Log.e("cache", "成功写入内存缓存 === 最大缓存：" + mMemoryCache.maxSize());
 
         mMemoryCache.put(url, bitmap);
     }

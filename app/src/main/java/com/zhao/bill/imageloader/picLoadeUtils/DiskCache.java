@@ -1,6 +1,5 @@
 package com.zhao.bill.imageloader.picLoadeUtils;
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +24,7 @@ import java.io.OutputStream;
  */
 public class DiskCache implements ImageCache {
 
+    private Context mContext;
     private String url;
     private String cacheDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Image/picsCache";
     private static final long DISK_CACHE_SIZE = 1024 * 1024 * 50;// 50MB
@@ -34,10 +34,14 @@ public class DiskCache implements ImageCache {
     }
 
     public DiskCache(Context mContext, String url) {
+        this.mContext = mContext;
         this.url = url;
         init();
     }
 
+    /**
+     * 初始化disklrucache
+     */
     private void init() {
 
         try {
@@ -74,6 +78,7 @@ public class DiskCache implements ImageCache {
 
         return null;*/
 
+
         // 第二种
         Bitmap bitmap = null;
         String key = null;
@@ -90,7 +95,6 @@ public class DiskCache implements ImageCache {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         if (bitmap != null) {
             Log.e("cache", "获取图片：来自于磁盘缓存 === " + cacheDir + "===" + bitmap);
@@ -156,7 +160,14 @@ public class DiskCache implements ImageCache {
 
     @Override
     public void remove(String url) {
+        String key = null;
 
+        try {
+            key = MD5Encoder.encode(url);
+            mDiskLruCache.remove(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
