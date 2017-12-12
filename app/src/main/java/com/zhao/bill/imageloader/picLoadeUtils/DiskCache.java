@@ -29,7 +29,7 @@ public class DiskCache implements ImageCache {
             if (file.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
 
-                Log.e("cache", "获取图片：来自于磁盘缓存： " + bitmap);
+                Log.e("cache", "获取图片：来自于磁盘缓存： " + cacheDir);
                 return bitmap;
             }
 

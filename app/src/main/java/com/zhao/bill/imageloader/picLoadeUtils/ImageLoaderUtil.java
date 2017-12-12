@@ -82,6 +82,8 @@ public class ImageLoaderUtil {
      * @return
      */
     private Bitmap downloadImage(String url) {
+        Log.e("cache", "开始从网络下载图片啦 ：");
+
         Bitmap bitmap = null;
 
        /* try {
@@ -98,6 +100,8 @@ public class ImageLoaderUtil {
 
             HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
             connection.setDoInput(true);
+            connection.setRequestMethod("GET");
+            connection.setReadTimeout(8000);
 
             bitmap = BitmapFactory.decodeStream(connection.getInputStream());
             connection.disconnect();
