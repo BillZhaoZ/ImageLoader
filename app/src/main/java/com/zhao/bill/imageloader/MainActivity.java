@@ -133,6 +133,6 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
 
     @Override
     public void onComplete(ImageView imageView, Bitmap bitmap, String url) {
-
+        Log.e("cache", "客户端的回调：" + url);
     }
 }
