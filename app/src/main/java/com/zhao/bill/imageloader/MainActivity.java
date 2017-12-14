@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
         findViewById(R.id.two).setOnClickListener(this);
         findViewById(R.id.reset).setOnClickListener(this);
 
+        mUtil = ImageLoaderUtil.getInstance();
+
         int type = (int) PreferenceUtil.getObject(PreferenceUtil.getSharedPreference(MainActivity.this), "type", 0);
 
         if (type == 1) {
@@ -48,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
             Log.e("cache", "type为：磁盘缓存");
 
             // 获取实例
-            mUtil = new ImageLoaderUtil();
             mUtil.setImageCache(new DiskCache(PicApplication.getInstance(), url));
             mUtil.displayImage(url, mImageView);
 
@@ -57,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
             Log.e("cache", "type为：内存缓存");
 
             // 获取实例
-            mUtil = new ImageLoaderUtil();
             mUtil.setImageCache(new MemoryCache());
             mUtil.displayImage(url, mImageView);
 
@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
             Log.e("cache", "type为：双重缓存");
 
             // 获取实例
-            mUtil = new ImageLoaderUtil();
             mUtil.setImageCache(new DoubleCache());
             mUtil.displayImage(url, mImageView);
         } else {
@@ -89,9 +88,6 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
 
     @Override
     public void onClick(View view) {
-
-        // 获取实例
-        mUtil = new ImageLoaderUtil();
 
         switch (view.getId()) {
 

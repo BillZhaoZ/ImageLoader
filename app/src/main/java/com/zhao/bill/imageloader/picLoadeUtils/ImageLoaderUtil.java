@@ -19,6 +19,21 @@ public class ImageLoaderUtil {
     private ImageCache mImageCache; // 图片缓存
     private ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); // 线程池，线程数量为CPU的数量
 
+    private static ImageLoaderUtil ImageLoaderUtilInstance;
+
+    public static ImageLoaderUtil getInstance() {
+
+        if (ImageLoaderUtilInstance == null) {
+            synchronized (ImageLoaderUtil.class) {
+                if (ImageLoaderUtilInstance == null) {
+                    ImageLoaderUtilInstance = new ImageLoaderUtil();
+                }
+            }
+        }
+
+        return ImageLoaderUtilInstance;
+    }
+
     /**
      * 注入缓存类型   依赖于抽象  里氏替换原则
      *

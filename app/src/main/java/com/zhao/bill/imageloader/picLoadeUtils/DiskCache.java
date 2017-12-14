@@ -131,6 +131,12 @@ public class DiskCache implements ImageCache {
 
             Log.e("cache", "成功写入磁盘缓存 === " + cacheDir);
 
+            // 这个方法用于将内存中的操作记录同步到日志文件（也就是journal文件）当中。这个方法非常重要，
+            // 因为DiskLruCache能够正常工作的前提就是要依赖于journal文件中的内容。
+            // 前面在讲解写入缓存操作的时候我有调用过一次这个方法，但其实并不是每次写入缓存都要调用一次flush()方法的，
+            // 频繁地调用并不会带来任何好处，只会额外增加同步journal文件的时间。
+            // 比较标准的做法就是在Activity的onPause()方法中去调用一次flush()方法就可以了。
+
             mDiskLruCache.flush();
 
         } catch (Exception e) {
