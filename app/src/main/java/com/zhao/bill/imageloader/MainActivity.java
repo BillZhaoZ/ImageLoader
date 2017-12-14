@@ -1,5 +1,6 @@
 package com.zhao.bill.imageloader;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import com.zhao.bill.imageloader.picLoadeUtils.DiskCache;
 import com.zhao.bill.imageloader.picLoadeUtils.DoubleCache;
+import com.zhao.bill.imageloader.picLoadeUtils.ImageListener;
 import com.zhao.bill.imageloader.picLoadeUtils.ImageLoaderUtil;
 import com.zhao.bill.imageloader.picLoadeUtils.MemoryCache;
 import com.zhao.bill.imageloader.util.PreferenceUtil;
@@ -16,7 +18,7 @@ import com.zhao.bill.imageloader.util.PreferenceUtil;
 /**
  * 主页设置
  */
-public class MainActivity extends AppCompatActivity implements ImageView.OnClickListener {
+public class MainActivity extends AppCompatActivity implements ImageView.OnClickListener, ImageListener {
 
     private ImageLoaderUtil mUtil;
     private ImageView mImageView;
@@ -127,5 +129,10 @@ public class MainActivity extends AppCompatActivity implements ImageView.OnClick
                 mUtil.removeCache(url);
                 break;
         }
+    }
+
+    @Override
+    public void onComplete(ImageView imageView, Bitmap bitmap, String url) {
+
     }
 }

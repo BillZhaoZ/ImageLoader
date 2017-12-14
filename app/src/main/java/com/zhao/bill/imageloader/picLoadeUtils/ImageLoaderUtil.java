@@ -52,13 +52,18 @@ public class ImageLoaderUtil {
         mImageCache.remove(url);
     }
 
+    public void displayImage(String url, ImageView imageView) {
+        displayImage(url, imageView, null);
+    }
+
     /**
      * 展示图片
      *
      * @param url
      * @param imageView
+     * @param imageListener
      */
-    public void displayImage(String url, ImageView imageView) {
+    public void displayImage(String url, ImageView imageView, ImageListener imageListener) {
         Bitmap bitmap = mImageCache.get(url);
 
         if (bitmap != null) {
@@ -68,7 +73,7 @@ public class ImageLoaderUtil {
             return;
         }
 
-        loadPic(url, imageView);
+        loadPic(url, imageView, imageListener);
     }
 
     /**
@@ -77,11 +82,12 @@ public class ImageLoaderUtil {
      * @param url
      * @param view
      */
-    private void loadPic(final String url, final ImageView view) {
+    private void loadPic(final String url, final ImageView view, ImageListener imageListener) {
         view.setTag(url);
 
         mExecutorService.submit(() -> {
             Bitmap bitmap = downloadImage(url);
+            imageListener.onComplete(view, bitmap, url);
 
             if (bitmap == null) {
                 return;
