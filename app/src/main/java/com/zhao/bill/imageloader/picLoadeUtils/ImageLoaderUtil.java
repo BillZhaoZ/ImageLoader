@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
@@ -87,10 +88,11 @@ public class ImageLoaderUtil {
         view.setTag(url);
 
         mExecutorService.submit(() -> {
-            Bitmap bitmap = downloadImage(url);
-            imageListener.onComplete(view, bitmap, url);
+            Bitmap bitmap = downloadImage(url, view, imageListener);
 
             if (bitmap == null) {
+                Log.e("cache", "网络下载的图片，为空，下载失败");
+
                 return;
             }
 
@@ -111,7 +113,7 @@ public class ImageLoaderUtil {
      * @param url
      * @return
      */
-    private Bitmap downloadImage(String url) {
+    private Bitmap downloadImage(String url, ImageView imageView, ImageListener imageListener) {
         Log.e("cache", "开始从网络下载图片啦 ：");
 
         Bitmap bitmap = null;
@@ -120,15 +122,20 @@ public class ImageLoaderUtil {
             URL url1 = new URL(url);
 
             HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
-            connection.setDoInput(true);
             connection.setRequestMethod("GET");
             connection.setReadTimeout(8000);
 
-            bitmap = BitmapFactory.decodeStream(connection.getInputStream());
+            InputStream mStream = connection.getInputStream();
+
+            bitmap = BitmapFactory.decodeStream(mStream);
             connection.disconnect();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+       /* if (bitmap != null) {
+            imageListener.onComplete(imageView, bitmap, url);
+        }*/
 
         return bitmap;
     }
